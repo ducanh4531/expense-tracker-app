@@ -30,11 +30,13 @@ const ExpenseForm = ({ onSubmitForm }: ExpenseFormProps) => {
 	const {
 		register,
 		handleSubmit,
+		reset,
 		formState: { errors },
 	} = useForm<ExpenseFormData>({ resolver: zodResolver(schema) });
 
 	const onSubmit = (data: ExpenseFormData) => {
 		onSubmitForm(data);
+		reset();
 	};
 
 	return (

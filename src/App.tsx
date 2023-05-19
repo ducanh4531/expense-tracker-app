@@ -12,30 +12,30 @@ const App = () => {
 	]);
 	const [selectedCategory, setSelectedCategory] = useState("");
 
-	const handleSubmit = (newProduct: ExpenseFormData) => {
-		const cloneProducts = [...expenses];
+	const handleSubmit = (newExpense: ExpenseFormData) => {
+		const cloneExpenses = [...expenses];
 
 		// make sure expenses is immutable
 		console.log(expenses);
 		setExpenses(
-			cloneProducts[0].category === ""
-				? cloneProducts.map((product) => ({
-						...product,
-						...newProduct,
+			cloneExpenses[0].category === ""
+				? cloneExpenses.map((expense) => ({
+						...expense,
+						...newExpense,
 				  }))
-				: [...cloneProducts, newProduct]
+				: [...cloneExpenses, newExpense]
 		);
 	};
 
 	const handleDelete = (description: string) => {
-		const product = expenses.filter(
-			(product) => product.description !== description
+		const updatedExpenses = expenses.filter(
+			(expense) => expense.description !== description
 		);
 
 		setExpenses(
-			!product.length
+			!updatedExpenses.length
 				? [{ description: "", amount: 0, category: "" }]
-				: product
+				: updatedExpenses
 		);
 		setSelectedCategory("All categories");
 	};
