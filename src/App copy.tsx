@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import axios, { AxiosError } from "axios";
 // import { BsFillCalendarFill } from "react-icons/bs";
 // import { produce } from "immer";
 
@@ -10,71 +11,133 @@ import { useState } from "react";
 // import Cart from "./components/Cart";
 // import NavBar from "./components/NavBar";
 // import Form from "./components/Form";
-import ExpenseForm, {
-	ExpenseFormData,
-} from "./expense-tracker/components/ExpenseForm";
-import ExpenseList from "./expense-tracker/components/ExpenseList";
-import ExpenseFilter from "./expense-tracker/components/ExpenseFilter";
+// import ExpenseForm, {
+// 	ExpenseFormData,
+// } from "./expense-tracker/components/ExpenseForm";
+// import ExpenseList from "./expense-tracker/components/ExpenseList";
+// import ExpenseFilter from "./expense-tracker/components/ExpenseFilter";
 
-export const categories = [
-	"All categories",
-	"Groceries",
-	"Utilities",
-	"Entertainment",
-];
+// export const categories = [
+// 	"All categories",
+// 	"Groceries",
+// 	"Utilities",
+// 	"Entertainment",
+// ];
 
 const App = () => {
-	const [expenses, setExpenses] = useState([
-		{ description: "", amount: 0, category: "" },
-	]);
-	const [selectedCategory, setSelectedCategory] = useState("");
+	interface Users {
+		id: number;
+		name: string;
+	}
 
-	const handleSubmit = (newProduct: ExpenseFormData) => {
-		const cloneProducts = [...expenses];
+	const [users, setUsers] = useState<Users[]>([]);
+	const [error, setError] = useState("");
+	// example useEffect:
+	// would like to focus on input field after each render and change title as well
+	const ref = useRef<HTMLInputElement>(null);
 
-		// make sure expenses is immutable
-		console.log(expenses);
-		setExpenses(
-			cloneProducts[0].category === ""
-				? cloneProducts.map((product) => ({
-						...product,
-						...newProduct,
-				  }))
-				: [...cloneProducts, newProduct]
-		);
-	};
+	// function inside will be called after each render
+	// useEffect(() => {
+	// console.log(ref.current);
 
-	const handleDelete = (removeProduct: ExpenseFormData) => {
-		const product = expenses.filter(
-			(product) => product.description !== removeProduct.description
-		);
+	// this code has a side effect: changing something outside of the component
+	// so the component is no longer a pure component
+	// that's why need to put to useEffect hook
+	// if (ref.current) ref.current.focus();
+	// });
 
-		setExpenses(
-			!product.length
-				? [{ description: "", amount: 0, category: "" }]
-				: product
-		);
-		setSelectedCategory("All categories");
-	};
+	// useEffect(() => {
+	// 	document.title = "My App";
+	// });
 
-	const handleSelectCategory = (category: string) => {
-		setSelectedCategory(category);
-	};
+	// use then catch method
+	// useEffect(() => {
+	// 	axios
+	// 		.get<Users[]>("https://jsonplaceholder.typicode.com/uxsers")
+	// 		.then((res) => setUsers(res.data))
+	// 		.catch((err) => setError(err.message));
+	// }, []);
 
-	const visibleExpenses =
-		selectedCategory && selectedCategory !== "All categories"
-			? expenses.filter(
-					(expense) => expense.category === selectedCategory
-			  )
-			: expenses;
+	// use async await method
+	useEffect(() => {
+		const fetchUsers = async () => {
+			try {
+				const res = await axios.get(
+					"https://jsonplaceholder.typicode.com/xusers"
+				);
+				setUsers(res.data);
+			} catch (err) {
+				setError((err as AxiosError).message);
+			}
+		};
+		fetchUsers();
+	}, []);
 
 	return (
 		<>
-			<ExpenseForm onSubmitForm={handleSubmit} />
-			<ExpenseFilter onSelectCategory={handleSelectCategory} />
-			<ExpenseList expenses={visibleExpenses} onDelete={handleDelete} />
+			{error && <h1 className="text-danger">{error}</h1>}
+			<ul>
+				{users.map((user) => (
+					<li key={user.id}>{user.name}</li>
+				))}
+			</ul>
+			{/* <input ref={ref} type="text" className="form-control" /> */}
 		</>
 	);
+
+	// const [expenses, setExpenses] = useState([
+	// 	{ description: "", amount: 0, category: "" },
+	// ]);
+	// const [selectedCategory, setSelectedCategory] = useState("");
+
+	// const handleSubmit = (newProduct: ExpenseFormData) => {
+	// const cloneProducts = [...expenses];
+
+	// make sure expenses is immutable
+	// 	console.log(expenses);
+	// 	setExpenses(
+	// 		cloneProducts[0].category === ""
+	// 			? cloneProducts.map((product) => ({
+	// 					...product,
+	// 					...newProduct,
+	// 			  }))
+	// 			: [...cloneProducts, newProduct]
+	// 	);
+	// };
+
+	// const handleDelete = (description: string) => {
+	// 	const product = expenses.filter(
+	// 		(product) => product.description !== description
+	// 	);
+
+	// setExpenses(
+	// 	!product.length
+	// 		? [{ description: "", amount: 0, category: "" }]
+	// 		: product
+	// );
+	// setSelectedCategory("All categories");
+	// };
+
+	// const handleSelectCategory = (category: string) => {
+	// 	setSelectedCategory(category);
+	// };
+
+	// const visibleExpenses =
+	// 	selectedCategory && selectedCategory !== "All categories"
+	// 		? expenses.filter(
+	// 				(expense) => expense.category === selectedCategory
+	// 		  )
+	// 		: expenses;
+
+	// return (
+	// <>
+	{
+		/* <ExpenseForm onSubmitForm={handleSubmit} />
+			<ExpenseFilter onSelectCategory={handleSelectCategory} />
+			<ExpenseList expenses={visibleExpenses} onDelete={handleDelete} /> */
+	}
+	// </>
+	// );
 
 	// const cities = ["hanoi", "hcm", "danang"];
 	// const [alertVisible, setAlertVisibility] = useState(false);
