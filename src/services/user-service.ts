@@ -10,7 +10,7 @@ export interface User {
 	name: string;
 }
 
-// class userService {
+// class UserService {
 // 	getAllUser() {
 // 		const controller = new AbortController();
 // 		const req = apiClient.get<User[]>("/users", {
@@ -32,6 +32,6 @@ export interface User {
 // 	}
 // }
 
-// export default new userService();
+// export default new UserService();
 
 export default create("/users");

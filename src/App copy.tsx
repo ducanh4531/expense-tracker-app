@@ -1,31 +1,11 @@
 // import axios, { AxiosError, CanceledError } from "axios";
-import { useEffect, useState } from "react";
 
-import { CanceledError } from "./services/api-client";
-import userService, { User } from "./services/user-service";
+import useUsers from "./hooks/useUsers";
+import UserService, { User } from "./services/user-service";
 
 const App = () => {
-	const [users, setUsers] = useState<User[]>([]);
-	const [error, setError] = useState("");
-	const [isLoading, setLoading] = useState(false);
-
-	// use then catch method
-	useEffect(() => {
-		setLoading(true);
-
-		const { req, cancel } = userService.getAll<User>();
-
-		req.then((res) => {
-			setUsers(res.data);
-			setLoading(false);
-		}).catch((err) => {
-			if (err instanceof CanceledError) return null;
-			setError(err.message);
-			setLoading(false);
-		});
-
-		return () => cancel();
-	}, []);
+	// using custom hook => can share functionalities to other components that need to use
+	const { users, error, isLoading, setUsers, setError } = useUsers();
 
 	// use async await method
 	// useEffect(() => {
@@ -70,7 +50,7 @@ const App = () => {
 
 		// this method also returns promise but nothing to do with then method,
 		// so can execute catch method immediately then
-		userService.delete(user.id).catch((err) => {
+		UserService.delete(user.id).catch((err) => {
 			setError(err.message);
 			setUsers(originalUsers);
 		});
@@ -81,8 +61,7 @@ const App = () => {
 		const newUser = { id: 0, name: "Anton" };
 		setUsers([newUser, ...users]);
 
-		userService
-			.create(newUser)
+		UserService.create(newUser)
 			.then(({ data: savedUser }) => setUsers([savedUser, ...users]))
 			.catch((err) => {
 				setError(err.message);
@@ -99,7 +78,7 @@ const App = () => {
 		const updatedUser = { ...user, name: `${user.name}!` };
 		setUsers(users.map((u) => (u.id === user.id ? updatedUser : u)));
 
-		userService.update(updatedUser).catch((err) => {
+		UserService.update(updatedUser).catch((err) => {
 			setError(err.message);
 			setUsers(originalUsers);
 		});

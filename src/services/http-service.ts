@@ -5,12 +5,14 @@ interface Entity {
 	id: number;
 }
 
-class httpService {
+class HttpService {
 	endpoint: string;
 
+	// constructor is a func which is called when create an instance of the class
 	constructor(endpoint: string) {
 		this.endpoint = endpoint;
 	}
+	// define a generic method
 	getAll<T>() {
 		const controller = new AbortController();
 		const req = apiClient.get<T[]>(this.endpoint, {
@@ -32,8 +34,6 @@ class httpService {
 	}
 }
 
-const create = (endpoint: string) => {
-	return new httpService(endpoint);
-};
+const create = (endpoint: string) => new HttpService(endpoint);
 
 export default create;
