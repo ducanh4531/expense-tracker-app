@@ -2,7 +2,6 @@
 // so components know absolutely nothing about making http request
 // can reuse user-service anywhere that need to get users, create, delete, update...
 // import apiClient from "./api-client";
-
 import create from "./http-service";
 
 export interface User {

@@ -1,45 +1,11 @@
 // import axios, { AxiosError, CanceledError } from "axios";
 
 import useUsers from "./hooks/useUsers";
-import UserService, { User } from "./services/user-service";
+import userService, { User } from "./services/user-service";
 
 const App = () => {
 	// using custom hook => can share functionalities to other components that need to use
 	const { users, error, isLoading, setUsers, setError } = useUsers();
-
-	// use async await method
-	// useEffect(() => {
-	// 	const controller = new AbortController();
-	// 	setLoading(true);
-
-	// 	const fetchUsers = async () => {
-	// 		try {
-	// 			const res = await axios.get(
-	// 				"https://jsonplaceholder.typicode.com/users",
-	// 				{ signal: controller.signal }
-	// 			);
-	// the order of these lines doesn't matter, since react will apply all these updates
-	// then rerender component
-	// setUsers(res.data);
-
-	// way 1: use setLoading at 2 places (resolved, rejected) => repeat code
-	// 	setLoading(false);
-	// } catch (err) {
-	// 	if (err instanceof CanceledError) return;
-	// 	setError((err as AxiosError).message);
-	// 	setLoading(false);
-	// }
-
-	// finally {
-	// way 2: use finally for setLoading, but this method doesn't work with strict mode turned on
-	// setLoading(false);
-	// }
-	// };
-
-	// 	fetchUsers();
-
-	// 	return () => controller.abort();
-	// }, []);
 
 	// there are two options in this func:
 	// update ui first, then call sv to save changes => faster (optimistic update) (prefer)
@@ -50,7 +16,7 @@ const App = () => {
 
 		// this method also returns promise but nothing to do with then method,
 		// so can execute catch method immediately then
-		UserService.delete(user.id).catch((err) => {
+		userService.delete(user.id).catch((err) => {
 			setError(err.message);
 			setUsers(originalUsers);
 		});
@@ -61,7 +27,8 @@ const App = () => {
 		const newUser = { id: 0, name: "Anton" };
 		setUsers([newUser, ...users]);
 
-		UserService.create(newUser)
+		userService
+			.create(newUser)
 			.then(({ data: savedUser }) => setUsers([savedUser, ...users]))
 			.catch((err) => {
 				setError(err.message);
@@ -78,7 +45,7 @@ const App = () => {
 		const updatedUser = { ...user, name: `${user.name}!` };
 		setUsers(users.map((u) => (u.id === user.id ? updatedUser : u)));
 
-		UserService.update(updatedUser).catch((err) => {
+		userService.update(updatedUser).catch((err) => {
 			setError(err.message);
 			setUsers(originalUsers);
 		});
